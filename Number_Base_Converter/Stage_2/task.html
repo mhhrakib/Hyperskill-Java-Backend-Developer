@@ -1,0 +1,81 @@
+<h5>Description</h5>
+
+<p>At this point, the user needs to restart the program each time after converting just one number, which is very inconvenient. Let's fix that and make your program prompt the user for more numbers until the user is ready to quit.</p>
+
+<p>Also, we will add the reverse conversion: from binary, octal, and hexadecimal systems to decimal. Converting from octal, hexadecimal, or any other system to decimal works almost the same way as with binary numbers, only the base is different. See for yourself:</p>
+
+<p><span class="math-tex">\(1726_8 = 1*512 + 7*64 + 2*8 + 6*1 = 982_{10}\)</span></p>
+
+<p><span class="math-tex">\(A3C_{16} = 10*256 + 3*16 + 12*1 = 2620_{10}\)</span></p>
+
+<h5>Objectives</h5>
+
+<p>Your program should output the prompt <code class="java">Do you want to convert /from decimal or /to decimal? (To quit type /exit)</code> to prompt the user for their next move. The possible commands are <code class="java">/from</code>, <code class="java">/to</code>, and <code class="java">/exit</code>.</p>
+
+<ul>
+	<li>If the user types <code class="java">/from</code>, the program should behave as in the previous stage and convert the user's number from the decimal system to binary, octal, or hexadecimal.</li>
+	<li>If the user types <code class="java">/to</code>, the program should:
+		<ol>
+			<li>Print the prompt <code class="java">Enter source number:</code> and read the user input number to be converted to decimal.</li>
+			<li>Print the prompt <code class="java">Enter source base: </code> and read the target base (2, 8, or 16).</li>
+			<li>Output the message <code class="java">Conversion to decimal result:</code> followed by the number's representation in the decimal system.</li>
+		</ol>
+	</li>
+	<li>If the user types <code class="java">/exit</code>, the program stops. Otherwise, it should process the command and prompt for the next one.</li>
+</ul>
+
+<h5>Examples</h5>
+
+<p>The greater-than symbol followed by a space (<code class="java">&gt; </code>) represents the user input. Note that it's not part of the input.</p>
+
+<p><strong>Example 1:</strong></p>
+
+<pre><code class="language-no-highlight">Do you want to convert /from decimal or /to decimal? (To quit type /exit) &gt; /from
+Enter a number in decimal system: &gt; 8
+Enter the target base: &gt; 16
+Conversion result: 8
+
+Do you want to convert /from decimal or /to decimal? (To quit type /exit) &gt; /from
+Enter a number in decimal system: &gt; 101
+Enter the target base: &gt; 2
+Conversion result: 1100101
+
+Do you want to convert /from decimal or /to decimal? (To quit type /exit) &gt; /from
+Enter a number in decimal system: &gt; 103
+Enter the target base: &gt; 8
+Conversion result: 147
+
+Do you want to convert /from decimal or /to decimal? (To quit type /exit) &gt; /exit</code></pre>
+
+<p><strong>Example 2:</strong></p>
+
+<pre><code class="language-no-highlight">Do you want to convert /from decimal or /to decimal? (To quit type /exit) &gt; /to
+Enter source number: &gt; ff
+Enter source base: &gt; 16
+Conversion to decimal result: 255
+
+Do you want to convert /from decimal or /to decimal? (To quit type /exit) &gt; /to
+Enter source number: &gt; 71
+Enter source base: &gt; 8
+Conversion to decimal result: 57
+
+Do you want to convert /from decimal or /to decimal? (To quit type /exit) &gt; /to
+Enter source number: &gt; 111001
+Enter source base: &gt; 2
+Conversion to decimal result: 57
+
+Do you want to convert /from decimal or /to decimal? (To quit type /exit) &gt; /exit</code></pre>
+
+<p><strong>Example 3:</strong></p>
+
+<pre><code class="language-no-highlight">Do you want to convert /from decimal or /to decimal? (To quit type /exit) &gt; /to
+Enter source number: &gt; 25a
+Enter source base: &gt; 16
+Conversion to decimal result: 602
+
+Do you want to convert /from decimal or /to decimal? (To quit type /exit) &gt; /from
+Enter number in decimal system: &gt; 602
+Enter target base: &gt; 16
+Conversion result: 25a
+
+Do you want to convert /from decimal or /to decimal? (To quit type /exit) &gt; /exit</code></pre>

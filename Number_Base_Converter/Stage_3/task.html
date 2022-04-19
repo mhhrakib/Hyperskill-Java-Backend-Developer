@@ -1,0 +1,51 @@
+<h5>Description</h5>
+
+<p>Ideally, we want to convert numbers in different bases, not only from or to the decimal system. In this stage, we will add support for converting numbers from any given source base to any target base. As there are 26 Latin letters and 10 digits, the maximum base is 26 + 10 = 36. So, the target and source base will be between 2 and 36.</p>
+
+<p>Also, it might be more convenient for our users if the program didn't ask for the base before each conversion and instead remembered the previously input base. This way, the users will have to do much less typing when they need to convert a bunch of numbers from base A to base B.</p>
+
+<p>To convert a number from the source base to the target base, you should first convert it to the decimal system and then convert the decimal number to the target base.</p>
+
+<p>Note that from this stage on, numbers might be larger than you expect, so you should use <code class="java">BigInteger</code> instead of <code class="java">Int</code> or <code class="java">Long</code> to avoid errors.</p>
+
+<h5>Objectives</h5>
+
+<p>Your program should have a two-level menu:</p>
+
+<ul>
+    <li>On the first level, the user sees the following prompt: <code class="java">Enter two numbers in format: {source base} {target base} (To quit type /exit)</code>. Then, they input two numbers separated by a single space: source base and target base. The user also has the option to use the <code class="java">/exit</code> command to quit the program.</li>
+    <li>On the second level, the user sees another prompt: <code class="java">Enter number in base {user source base} to convert to base {user target base} (To go back type /back)</code>, and inputs the number in the source base. The program outputs the message <code class="java">Conversion result:</code> followed by the number in the target base. Then, the program asks for the new number to convert from the previously provided source base to the target base. To change the bases, the user can choose the <code class="java">BACK</code> command and return to the first level menu to make the necessary changes.</li>
+</ul>
+
+<h5>Example</h5>
+
+<p>The greater-than symbol followed by a space (<code class="java">&gt; </code>) represents the user input. Note that it's not part of the input.</p>
+
+<pre><code class="language-no-highlight">Enter two numbers in format: {source base} {target base} (To quit type /exit) &gt; 10 2
+Enter number in base 10 to convert to base 2 (To go back type /back) &gt; 11
+Conversion result: 1011
+
+Enter number in base 10 to convert to base 2 (To go back type /back) &gt; 18
+Conversion result: 10010
+
+Enter number in base 10 to convert to base 2 (To go back type /back) &gt; 127
+Conversion result: 1111111
+
+Enter number in base 10 to convert to base 2 (To go back type /back) &gt; 189344562689000108753301247
+Conversion result: 1001110010011111010001010100111110001111101101011010101101001001111110100010111011111111
+
+Enter number in base 10 to convert to base 2 (To go back type /back) &gt; /back
+
+Enter two numbers in format: {source base} {target base} (To quit type /exit) &gt; 36 10
+Enter number in base 36 to convert to base 10 (To go back type /back) &gt; abcde
+Conversion result: 17325410
+
+Enter number in base 36 to convert to base 10 (To go back type /back) &gt; 13a0
+Conversion result: 50904
+
+Enter number in base 36 to convert to base 10 (To go back type /back) &gt; az
+Conversion result: 395
+
+Enter number in base 36 to convert to base 10 (To go back type /back) &gt; /back
+
+Enter two numbers in format: {source base} {target base} (To quit type /exit) &gt; /exit</code></pre>

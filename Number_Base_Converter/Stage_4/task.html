@@ -1,0 +1,69 @@
+<h5>Description</h5>
+
+<p>Fractional numbers can also be converted from one base to another, so let's add this functionality to our program!</p>
+
+<p>To convert a fractional number from one base to another, you need to split the number into two parts: integer and fractional. Convert each part from their base to decimal independently and then convert them (once again, separately) to the target base. Finally, combine both parts and get the final result!</p>
+
+<p>The most challenging part will probably be converting the decimal fractional part to the target base. Don't worry, though: since you already know how to convert fractions from decimal to binary, it should not be a problem for you! Converting fractions from decimal to any base is practically the same: just use the proper denominator, which is the target base, instead of <samp>2</samp>.</p>
+
+<p>The example below shows how to convert the number 0.375 from decimal to base 20:</p>
+
+<table border="1" cellpadding="1" cellspacing="1" style="width: 500px;">
+	<tbody>
+		<tr>
+			<td style="text-align: center;"><strong>Fractional</strong></td>
+			<td style="text-align: center;"><strong>Integer</strong></td>
+		</tr>
+		<tr>
+			<td style="text-align: center;"><strong>0.375</strong> * 20 =</td>
+			<td style="text-align: center;"><strong>7</strong> + 0.5</td>
+		</tr>
+		<tr>
+			<td style="text-align: center;"><strong>0.5 </strong>* 20 =</td>
+			<td style="text-align: center;"><strong>10</strong> + 0.0</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>Result: <span class="math-tex">\(0.375_{10} = 0.7a_{20}\)</span></p>
+
+<p>Just like in the previous stage, the input numbers can be large. You might want to consider using <code class="java">java.math.BigDecimal</code> to handle large fractions. Check the <a target="_blank" href="https://docs.oracle.com/javase/7/docs/api/java/math/BigDecimal.html" rel="noopener noreferrer nofollow">documentation</a> on BigDecimal.</p>
+
+<h5>Objectives</h5>
+
+<p>Your program should behave almost the same way as in the previous stage: the two-level menu and the commands stay the same.</p>
+
+<p>When your program gets a fractional number, it should output its representation in the target base rounded to 5 characters (digits or letters) in the fractional part. If there is no fractional part in the initial number, it should be omitted in the resulting number, too.</p>
+
+<h5>Example</h5>
+
+<p>The greater-than symbol followed by a space (<code class="java">&gt; </code>) represents the user input. Note that it's not part of the input.</p>
+
+<pre><code class="language-no-highlight">Enter two numbers in format: {source base} {target base} (To quit type /exit) &gt; 10 7
+Enter number in base 10 to convert to base 7 (To go back type /back) &gt; 0.234
+Conversion result: 0.14315
+
+Enter number in base 10 to convert to base 7 (To go back type /back) &gt; 10.234
+Conversion result: 13.14315
+
+Enter number in base 10 to convert to base 7 (To go back type /back) &gt; /back
+
+Enter two numbers in format: {source base} {target base} (To quit type /exit) &gt; 35 17
+Enter number in base 35 to convert to base 17 (To go back type /back) &gt; af.xy
+Conversion result: 148.g88a8
+
+Enter number in base 35 to convert to base 17 (To go back type /back) &gt; aaaa.0
+Conversion result: 54e36.00000
+
+Enter number in base 35 to convert to base 17 (To go back type /back) &gt; /back
+
+Enter two numbers in format: {source base} {target base} (To quit type /exit) &gt; 21 10
+Enter number in base 21 to convert to base 10 (To go back type /back) &gt; 4242
+Conversion result: 38012
+
+Enter number in base 21 to convert to base 10 (To go back type /back) &gt; 4242.13a
+Conversion result: 38012.05550
+
+Enter number in base 21 to convert to base 10 (To go back type /back) &gt; /back
+
+Enter two numbers in format: {source base} {target base} (To quit type /exit) &gt; /exit</code></pre>
