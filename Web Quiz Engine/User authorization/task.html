@@ -1,0 +1,39 @@
+<html><body><h5 id="description">Description</h5>
+<p>Your service already has a well-designed API and stores all the quizzes in the database. At this stage, you will improve the service to support users and the authorization process. This will allow you to provide different privileges to the users and understand what do they do in the service.</p>
+<p>Here are two operations to be added:</p>
+<ul>
+<li><strong>register a new user</strong>, which accepts an email as the login and a password;</li>
+<li><strong>deleting a quiz</strong> created by the current user.</li>
+</ul>
+<p>All the previously developed operations should not be changed. As before, when creating a new quiz, the service checks the following rules: the fields <code class="language-json">title</code> and <code class="language-json">text</code> exist and they are not empty, and the <code class="language-json">options</code> array has two or more items. If at least one of these conditions is not satisfied, the service returns the <code class="language-json">400 (Bad request)</code> status code. As before, server responses for getting quizzes should not include answers for the quizzes.</p>
+<p></p><div class="alert alert-warning">For the testing reasons, make <code class="language-json">POST /actuator/shutdown</code> endpoint accessible without authentication.</div>
+<p>The main change is the accessibility of these operations. Now, to perform any operations with quizzes (<strong>create</strong>, <strong>solve</strong>, <strong>get one</strong>, <strong>get all</strong>, <strong>delete</strong>), the user has to be registered and then authorized via <strong>HTTP Basic Auth</strong> by sending their email and password for each request. Otherwise, the service returns the <code class="language-json">401 (Unauthorized)</code> status code. Thus, the only operation that does not require authorization is the registration.</p>
+<p>Here are some articles about spring security:</p>
+<ul>
+<li><a href="https://www.springboottutorial.com/securing-rest-services-with-spring-boot-starter-security" rel="noopener noreferrer nofollow" target="_blank">securing rest services</a>;</li>
+<li><a href="https://howtodoinjava.com/spring-boot2/security-rest-basic-auth-example/" rel="noopener noreferrer nofollow" target="_blank">security rest basic auth example</a>;</li>
+<li><a href="https://www.devglan.com/spring-security/spring-boot-security-rest-basic-authentication" rel="noopener noreferrer nofollow" target="_blank">spring boot and basic authentication</a>;</li>
+</ul>
+<p></p><div class="alert alert-warning">Do not store the actual password in the database! Instead, configure password encryption using <code class="language-json">BCrypt</code> or some other algorithm via Spring Security.</div>
+<h5 id="register-a-user">Register a user</h5>
+<p>To register a new user, the client needs to send a JSON with <code class="language-json">email</code> and <code class="language-json">password</code> via <code class="language-json">POST</code> request to <code class="language-json">/api/register</code>:</p>
+<pre><code class="language-json">{
+  "email": "test@gmail.com",
+  "password": "secret"
+}
+</code></pre>
+<p>The service returns <code class="language-json">200 (OK)</code> status code if the registration has been completed successfully.</p>
+<p>If the <code class="language-json">email</code> is already taken by another user, the service will return the <code class="language-json">400 (Bad request)</code> status code.</p>
+<p>Here are some additional restrictions to the format of user credentials:</p>
+<ul>
+<li>the email must have a valid format (with <code class="language-json">@</code> and <code class="language-json">.</code>);</li>
+<li>the password must have at <strong>least five</strong> characters.</li>
+</ul>
+<p>If any of them is not satisfied, the service will also return the <code class="language-json">400 (Bad request)</code> status code.</p>
+<p>All the following operations need a registered user to be successfully completed.</p>
+<h5 id="delete-a-quiz">Delete a quiz</h5>
+<p>A user can delete their quiz by sending the <code class="language-json">DELETE</code> request to <code class="language-json">/api/quizzes/{id}</code>.</p>
+<p>If the operation was successful, the service returns the <code class="language-json">204 (No content)</code> status code without any content.</p>
+<p>If the specified quiz does not exist, the server returns <code class="language-json">404 (Not found)</code>. If the specified user is not the author of this quiz, the response is the <code class="language-json">403 (Forbidden)</code> status code.</p>
+<h5 id="additional-ideas">Additional ideas</h5>
+<p>If you would like your service to support more operations, add <code class="language-json">PUT</code> or <code class="language-json">PATCH</code> to update existing quizzes in the similar way as <code class="language-json">DELETE</code>. Our tests will not verify these operations.</p></body></html>
