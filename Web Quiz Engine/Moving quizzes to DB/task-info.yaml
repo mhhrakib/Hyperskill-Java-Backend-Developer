@@ -634,9 +634,6 @@ files:
     management.endpoints.web.exposure.include=*
     management.endpoint.shutdown.enabled=true
   learner_created: false
-- name: src/engine/repository/QuizRepository.java
-  visible: true
-  learner_created: true
 - name: build.gradle
   visible: true
   text: |-
@@ -669,6 +666,9 @@ files:
     }
   learner_created: false
 - name: src/engine/service/QuizService.java
+  visible: true
+  learner_created: true
+- name: src/engine/repository/QuizRepository.java
   visible: true
   learner_created: true
 feedback_link: https://hyperskill.org/learn/step/8255#comment

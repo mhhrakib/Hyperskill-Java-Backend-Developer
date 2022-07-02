@@ -1,6 +1,8 @@
 package engine.controller;
 
 import engine.model.Quiz;
+import engine.service.QuizService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -55,49 +57,48 @@ class InvalidQuizException extends RuntimeException {
 @RestController
 public class QuizController {
     private final List<Quiz> quizzes = new ArrayList<>();
-    private int idCount = 0;
+    @Autowired
+    QuizService quizService;
 
     @GetMapping("/api/quizzes")
     public List<Quiz> getQuizzes() {
-        return quizzes;
+        return quizService.getAllQuiz();
     }
 
     @PostMapping("/api/quizzes")
     public ResponseEntity<Quiz> addQuiz(@Valid @RequestBody Quiz quiz) {
         try {
-            quiz.setId(++idCount);
-            if (quiz.getAnswer() == null) {
-                quiz.setAnswer(new ArrayList<>());
-            }
-            quizzes.add(quiz);
-            return ResponseEntity.ok(quiz);
+            Quiz quizCreate = quizService.saveQuiz(quiz);
+            System.out.println(quizCreate.toString());
+            return ResponseEntity.ok(quizCreate);
         } catch (ConstraintViolationException e) {
             throw new InvalidQuizException(e.getMessage());
         }
     }
 
     @GetMapping("/api/quizzes/{id}")
-    public ResponseEntity<Quiz> getQuiz(@PathVariable int id) {
-        for (Quiz quiz : quizzes) {
-            if (quiz.getId() == id) {
-                return ResponseEntity.ok(quiz);
-            }
+    public ResponseEntity<Quiz> getQuiz(@PathVariable long id) {
+        Quiz quiz = quizService.findQuizById(id);
+        if (quiz != null) {
+            return ResponseEntity.ok(quiz);
+        } else {
+            throw new QuizNotFoundException("Oops! The quiz with specified id: " + id + " could not be found.");
         }
-        throw new QuizNotFoundException("Oops! The quiz with specified id: " + id + " could not be found.");
     }
 
     @PostMapping("/api/quizzes/{id}/solve")
-    public ResponseEntity<Response> solveQuiz(@PathVariable int id, @RequestBody Map<String, List<Integer>> map) {
+    public ResponseEntity<Response> solveQuiz(@PathVariable long id, @RequestBody Map<String, List<Integer>> map) {
         List<Integer> answer = map.get("answer");
-        for (Quiz quiz : quizzes) {
-            if (quiz.getId() == id) {
-                if (quiz.getAnswer().equals(answer)) {
-                    return ResponseEntity.ok(new Response(true, "Congratulations, you're right!"));
-                } else {
-                    return ResponseEntity.ok(new Response(false, "Wrong answer! Please, try again."));
-                }
+        Quiz quiz = quizService.findQuizById(id);
+        if (quiz != null) {
+            List<Integer> res = new ArrayList<>(quiz.getAnswer());
+            if (res.equals(answer)) {
+                return ResponseEntity.ok(new Response(true, "Congratulations, you're right!"));
+            } else {
+                return ResponseEntity.ok(new Response(false, "Wrong answer! Please, try again."));
             }
+        } else {
+            throw new QuizNotFoundException("Oops! The quiz with specified id: " + id + " could not be found.");
         }
-        throw new QuizNotFoundException("Oops! The quiz with specified id: " + id + " could not be found.");
     }
 }
