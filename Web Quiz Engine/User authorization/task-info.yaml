@@ -628,13 +628,7 @@ files:
 
     }
   learner_created: true
-- name: src/engine/WebSecurityConfigurerImpl.java
-  visible: true
-  learner_created: true
 - name: src/engine.7z
-  visible: true
-  learner_created: true
-- name: src/engine/controller/UserController.java
   visible: true
   learner_created: true
 - name: build.gradle
@@ -668,9 +662,6 @@ files:
         implementation 'org.springframework.boot:spring-boot-starter-web'
     }
   learner_created: false
-- name: src/engine/model/User.java
-  visible: true
-  learner_created: true
 - name: src/engine/model/Quiz.java
   visible: true
   text: |+
@@ -896,12 +887,6 @@ files:
 
     }
   learner_created: false
-- name: src/engine/repository/UserRepository.java
-  visible: true
-  learner_created: true
-- name: src/engine/service/UserService.java
-  visible: true
-  learner_created: true
 - name: src/engine/service/QuizService.java
   visible: true
   text: |
@@ -943,6 +928,21 @@ files:
     management.endpoints.web.exposure.include=*
     management.endpoint.shutdown.enabled=true
   learner_created: false
+- name: src/engine/service/UserService.java
+  visible: true
+  learner_created: true
+- name: src/engine/model/User.java
+  visible: true
+  learner_created: true
+- name: src/engine/repository/UserRepository.java
+  visible: true
+  learner_created: true
+- name: src/engine/WebSecurityConfigurerImpl.java
+  visible: true
+  learner_created: true
+- name: src/engine/controller/UserController.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/8256#comment
 status: Solved
 feedback:

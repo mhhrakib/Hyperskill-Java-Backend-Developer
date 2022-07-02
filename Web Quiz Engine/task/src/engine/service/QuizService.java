@@ -5,9 +5,11 @@ import engine.repository.QuizRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
+@Transactional
 public class QuizService {
     private final QuizRepository quizRepository;
 
@@ -22,6 +24,10 @@ public class QuizService {
 
     public Quiz findQuizById(Long id) {
         return quizRepository.findQuizById(id);
+    }
+
+    public void deleteQuizById(Long id) {
+        quizRepository.deleteQuizById(id);
     }
 
     public List<Quiz> getAllQuiz() {

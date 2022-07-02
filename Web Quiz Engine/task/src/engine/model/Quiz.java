@@ -1,5 +1,6 @@
 package engine.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
@@ -31,6 +32,9 @@ public class Quiz {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ElementCollection
     private List<Integer> answer;
+
+    @JsonIgnore
+    private String createdBy;
 
     public Quiz() {
     }
@@ -82,6 +86,14 @@ public class Quiz {
         this.answer = answer;
     }
 
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
     @Override
     public String toString() {
         return "Quiz{" +
@@ -90,6 +102,7 @@ public class Quiz {
                 ", text='" + text + '\'' +
                 ", options=" + options +
                 ", answer=" + answer +
+                ", createdBy='" + createdBy + '\'' +
                 '}';
     }
 }
