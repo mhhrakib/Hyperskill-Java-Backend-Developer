@@ -133,15 +133,6 @@ files:
         }
     }
   learner_created: false
-- name: src/engine/model/Quiz.java
-  visible: true
-  learner_created: true
-- name: src/engine/controller/QuizController.java
-  visible: true
-  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/8252#comment
 status: Solved
-feedback:
-  message: Congratulations!
-  time: Wed, 08 Jun 2022 10:14:01 UTC
 record: 1

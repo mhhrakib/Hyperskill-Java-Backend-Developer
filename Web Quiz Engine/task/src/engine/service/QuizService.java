@@ -3,6 +3,8 @@ package engine.service;
 import engine.model.Quiz;
 import engine.repository.QuizRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -30,7 +32,7 @@ public class QuizService {
         quizRepository.deleteQuizById(id);
     }
 
-    public List<Quiz> getAllQuiz() {
-        return quizRepository.findAll();
+    public Page<Quiz> getAllQuiz(Pageable pageable) {
+        return quizRepository.findAll(pageable);
     }
 }

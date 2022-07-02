@@ -1,6 +1,38 @@
 type: edu
 custom_name: stage4
 files:
+- name: build.gradle
+  visible: true
+  text: |-
+    buildscript {
+        apply plugin: 'hyperskill'
+
+        repositories {
+            mavenCentral()
+        }
+        dependencies {
+            classpath "org.springframework.boot:spring-boot-gradle-plugin:$hs.spring.bootVersion"
+            classpath "io.spring.gradle:dependency-management-plugin:$hs.spring.dependencyManagementVersion"
+        }
+    }
+
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    repositories {
+        mavenCentral()
+    }
+
+    sourceSets.main.resources.srcDirs = ["src/resources"]
+
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter'
+        implementation 'org.springframework.boot:spring-boot-starter-actuator'
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+        implementation 'org.springframework.boot:spring-boot-starter-validation'
+    }
+  learner_created: false
 - name: src/engine/WebQuizEngine.java
   visible: true
   text: |
@@ -9,6 +41,7 @@ files:
     import org.springframework.boot.SpringApplication;
     import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+
     @SpringBootApplication
     public class WebQuizEngine {
 
@@ -16,6 +49,207 @@ files:
             SpringApplication.run(WebQuizEngine.class, args);
         }
 
+    }
+  learner_created: false
+- name: src/resources/application.properties
+  visible: true
+  text: |
+    server.port=8889
+    management.endpoints.web.exposure.include=*
+    management.endpoint.shutdown.enabled=true
+  learner_created: false
+- name: src/engine/model/Quiz.java
+  visible: true
+  text: |+
+    package engine.model;
+
+    import com.fasterxml.jackson.annotation.JsonProperty;
+
+    import javax.validation.constraints.NotEmpty;
+    import javax.validation.constraints.NotNull;
+    import javax.validation.constraints.Size;
+    import java.util.List;
+
+    public class Quiz {
+        private int id;
+        @NotEmpty
+        private String title;
+        @NotEmpty
+        private String text;
+        @Size(min = 2, message = "There should be at least two options")
+        @NotNull
+        private List<String> options;
+        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+        private List<Integer> answer;
+
+        public Quiz() {
+        }
+
+        public Quiz(String title, String text, List<String> options, List<Integer> answer) {
+            this.title = title;
+            this.text = text;
+            this.options = options;
+            this.answer = answer;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public List<Integer> getAnswer() {
+            return answer;
+        }
+
+        public void setAnswer(List<Integer> answer) {
+            this.answer = answer;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public void setText(String text) {
+            this.text = text;
+        }
+
+        public List<String> getOptions() {
+            return options;
+        }
+
+        public void setOptions(List<String> options) {
+            this.options = options;
+        }
+
+        @Override
+        public String toString() {
+            return "Quiz{" +
+                    "id=" + id +
+                    ", title='" + title + '\'' +
+                    ", text='" + text + '\'' +
+                    ", options=" + options +
+                    ", answer=" + answer +
+                    '}';
+        }
+    }
+
+  learner_created: false
+- name: src/engine/controller/QuizController.java
+  visible: true
+  text: |
+    package engine.controller;
+
+    import engine.model.Quiz;
+    import org.springframework.http.HttpStatus;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.web.bind.annotation.*;
+
+    import javax.validation.ConstraintViolationException;
+    import javax.validation.Valid;
+    import java.util.ArrayList;
+    import java.util.List;
+    import java.util.Map;
+
+    class Response {
+        Boolean success;
+        String feedback;
+
+        public Response(Boolean success, String feedback) {
+            this.success = success;
+            this.feedback = feedback;
+        }
+
+        public Boolean getSuccess() {
+            return success;
+        }
+
+        public void setSuccess(Boolean success) {
+            this.success = success;
+        }
+
+        public String getFeedback() {
+            return feedback;
+        }
+
+        public void setFeedback(String feedback) {
+            this.feedback = feedback;
+        }
+    }
+
+    @ResponseStatus(code = HttpStatus.NOT_FOUND)
+    class QuizNotFoundException extends RuntimeException {
+        public QuizNotFoundException(String cause) {
+            super(cause);
+        }
+    }
+
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    class InvalidQuizException extends RuntimeException {
+        public InvalidQuizException(String cause) {
+            super(cause);
+        }
+    }
+
+
+    @RestController
+    public class QuizController {
+        private final List<Quiz> quizzes = new ArrayList<>();
+        private int idCount = 0;
+
+        @GetMapping("/api/quizzes")
+        public List<Quiz> getQuizzes() {
+            return quizzes;
+        }
+
+        @PostMapping("/api/quizzes")
+        public ResponseEntity<Quiz> addQuiz(@Valid @RequestBody Quiz quiz) {
+            try {
+                quiz.setId(++idCount);
+                if (quiz.getAnswer() == null) {
+                    quiz.setAnswer(new ArrayList<>());
+                }
+                quizzes.add(quiz);
+                return ResponseEntity.ok(quiz);
+            } catch (ConstraintViolationException e) {
+                throw new InvalidQuizException(e.getMessage());
+            }
+        }
+
+        @GetMapping("/api/quizzes/{id}")
+        public ResponseEntity<Quiz> getQuiz(@PathVariable int id) {
+            for (Quiz quiz : quizzes) {
+                if (quiz.getId() == id) {
+                    return ResponseEntity.ok(quiz);
+                }
+            }
+            throw new QuizNotFoundException("Oops! The quiz with specified id: " + id + " could not be found.");
+        }
+
+        @PostMapping("/api/quizzes/{id}/solve")
+        public ResponseEntity<Response> solveQuiz(@PathVariable int id, @RequestBody Map<String, List<Integer>> map) {
+            List<Integer> answer = map.get("answer");
+            for (Quiz quiz : quizzes) {
+                if (quiz.getId() == id) {
+                    if (quiz.getAnswer().equals(answer)) {
+                        return ResponseEntity.ok(new Response(true, "Congratulations, you're right!"));
+                    } else {
+                        return ResponseEntity.ok(new Response(false, "Wrong answer! Please, try again."));
+                    }
+                }
+            }
+            throw new QuizNotFoundException("Oops! The quiz with specified id: " + id + " could not be found.");
+        }
     }
   learner_created: false
 - name: test/tests/WebQuizEngineTest.java
@@ -433,247 +667,21 @@ files:
         }
     }
   learner_created: false
-- name: src/engine/model/Quiz.java
-  visible: true
-  text: |+
-    package engine.model;
-
-    import com.fasterxml.jackson.annotation.JsonProperty;
-
-    import javax.validation.constraints.NotEmpty;
-    import javax.validation.constraints.NotNull;
-    import javax.validation.constraints.Size;
-    import java.util.List;
-
-    public class Quiz {
-        private int id;
-        @NotEmpty
-        private String title;
-        @NotEmpty
-        private String text;
-        @Size(min = 2, message = "There should be at least two options")
-        @NotNull
-        private List<String> options;
-        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-        private List<Integer> answer;
-
-        public Quiz() {
-        }
-
-        public Quiz(String title, String text, List<String> options, List<Integer> answer) {
-            this.title = title;
-            this.text = text;
-            this.options = options;
-            this.answer = answer;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
-        public List<Integer> getAnswer() {
-            return answer;
-        }
-
-        public void setAnswer(List<Integer> answer) {
-            this.answer = answer;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public String getText() {
-            return text;
-        }
-
-        public void setText(String text) {
-            this.text = text;
-        }
-
-        public List<String> getOptions() {
-            return options;
-        }
-
-        public void setOptions(List<String> options) {
-            this.options = options;
-        }
-
-        @Override
-        public String toString() {
-            return "Quiz{" +
-                    "id=" + id +
-                    ", title='" + title + '\'' +
-                    ", text='" + text + '\'' +
-                    ", options=" + options +
-                    ", answer=" + answer +
-                    '}';
-        }
-    }
-
-  learner_created: true
-- name: src/engine/controller/QuizController.java
-  visible: true
-  text: |
-    package engine.controller;
-
-    import engine.model.Quiz;
-    import org.springframework.http.HttpStatus;
-    import org.springframework.http.ResponseEntity;
-    import org.springframework.web.bind.annotation.*;
-
-    import javax.validation.ConstraintViolationException;
-    import javax.validation.Valid;
-    import java.util.ArrayList;
-    import java.util.List;
-    import java.util.Map;
-
-    class Response {
-        Boolean success;
-        String feedback;
-
-        public Response(Boolean success, String feedback) {
-            this.success = success;
-            this.feedback = feedback;
-        }
-
-        public Boolean getSuccess() {
-            return success;
-        }
-
-        public void setSuccess(Boolean success) {
-            this.success = success;
-        }
-
-        public String getFeedback() {
-            return feedback;
-        }
-
-        public void setFeedback(String feedback) {
-            this.feedback = feedback;
-        }
-    }
-
-    @ResponseStatus(code = HttpStatus.NOT_FOUND)
-    class QuizNotFoundException extends RuntimeException {
-        public QuizNotFoundException(String cause) {
-            super(cause);
-        }
-    }
-
-    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    class InvalidQuizException extends RuntimeException {
-        public InvalidQuizException(String cause) {
-            super(cause);
-        }
-    }
-
-
-    @RestController
-    public class QuizController {
-        private final List<Quiz> quizzes = new ArrayList<>();
-        private int idCount = 0;
-
-        @GetMapping("/api/quizzes")
-        public List<Quiz> getQuizzes() {
-            return quizzes;
-        }
-
-        @PostMapping("/api/quizzes")
-        public ResponseEntity<Quiz> addQuiz(@Valid @RequestBody Quiz quiz) {
-            try {
-                quiz.setId(++idCount);
-                if (quiz.getAnswer() == null) {
-                    quiz.setAnswer(new ArrayList<>());
-                }
-                quizzes.add(quiz);
-                return ResponseEntity.ok(quiz);
-            } catch (ConstraintViolationException e) {
-                throw new InvalidQuizException(e.getMessage());
-            }
-        }
-
-        @GetMapping("/api/quizzes/{id}")
-        public ResponseEntity<Quiz> getQuiz(@PathVariable int id) {
-            for (Quiz quiz : quizzes) {
-                if (quiz.getId() == id) {
-                    return ResponseEntity.ok(quiz);
-                }
-            }
-            throw new QuizNotFoundException("Oops! The quiz with specified id: " + id + " could not be found.");
-        }
-
-        @PostMapping("/api/quizzes/{id}/solve")
-        public ResponseEntity<Response> solveQuiz(@PathVariable int id, @RequestBody Map<String, List<Integer>> map) {
-            List<Integer> answer = map.get("answer");
-            for (Quiz quiz : quizzes) {
-                if (quiz.getId() == id) {
-                    if (quiz.getAnswer().equals(answer)) {
-                        return ResponseEntity.ok(new Response(true, "Congratulations, you're right!"));
-                    } else {
-                        return ResponseEntity.ok(new Response(false, "Wrong answer! Please, try again."));
-                    }
-                }
-            }
-            throw new QuizNotFoundException("Oops! The quiz with specified id: " + id + " could not be found.");
-        }
-    }
-  learner_created: true
-- name: src/resources/application.properties
-  visible: true
-  text: |
-    server.port=8889
-    management.endpoints.web.exposure.include=*
-    management.endpoint.shutdown.enabled=true
-  learner_created: false
-- name: build.gradle
-  visible: true
-  text: |-
-    buildscript {
-        apply plugin: 'hyperskill'
-
-        repositories {
-            mavenCentral()
-        }
-        dependencies {
-            classpath "org.springframework.boot:spring-boot-gradle-plugin:$hs.spring.bootVersion"
-            classpath "io.spring.gradle:dependency-management-plugin:$hs.spring.dependencyManagementVersion"
-        }
-    }
-
-    apply plugin: 'java'
-    apply plugin: 'org.springframework.boot'
-    apply plugin: 'io.spring.dependency-management'
-
-    repositories {
-        mavenCentral()
-    }
-
-    sourceSets.main.resources.srcDirs = ["src/resources"]
-
-    dependencies {
-        implementation 'org.springframework.boot:spring-boot-starter'
-        implementation 'org.springframework.boot:spring-boot-starter-actuator'
-        implementation 'org.springframework.boot:spring-boot-starter-web'
-    }
-  learner_created: false
 - name: src/engine/service/QuizService.java
   visible: true
   learner_created: true
 - name: src/engine/repository/QuizRepository.java
   visible: true
   learner_created: true
+- name: src/engine/model/Answer.java
+  visible: true
+  learner_created: true
+- name: src/engine/model/Option.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/8255#comment
 status: Solved
 feedback:
   message: Congratulations!
-  time: Sun, 19 Jun 2022 15:54:17 UTC
-record: 4
+  time: Sun, 19 Jun 2022 15:42:13 UTC
+record: 3

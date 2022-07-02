@@ -40,6 +40,7 @@ files:
     import org.springframework.boot.SpringApplication;
     import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+
     @SpringBootApplication
     public class WebQuizEngine {
 
@@ -248,125 +249,6 @@ files:
         }
     }
   learner_created: false
-- name: src/engine/model/Quiz.java
-  visible: true
-  text: |+
-    package engine.model;
-
-    import java.util.List;
-
-    public class Quiz {
-        private String title;
-        private String text;
-        private List<String> options;
-
-        public Quiz() {
-        }
-
-        public Quiz(String title, String text, List<String> options) {
-            this.title = title;
-            this.text = text;
-            this.options = options;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public String getText() {
-            return text;
-        }
-
-        public void setText(String text) {
-            this.text = text;
-        }
-
-        public List<String> getOptions() {
-            return options;
-        }
-
-        public void setOptions(List<String> options) {
-            this.options = options;
-        }
-
-        @java.lang.Override
-        public java.lang.String toString() {
-            return "Quiz{" +
-                    "title='" + title + '\'' +
-                    ", text='" + text + '\'' +
-                    ", options=" + options +
-                    '}';
-        }
-    }
-
-  learner_created: true
-- name: src/engine/controller/QuizController.java
-  visible: true
-  text: |
-    package engine.controller;
-
-    import engine.model.Quiz;
-    import org.springframework.http.ResponseEntity;
-    import org.springframework.web.bind.annotation.GetMapping;
-    import org.springframework.web.bind.annotation.PostMapping;
-    import org.springframework.web.bind.annotation.RequestParam;
-    import org.springframework.web.bind.annotation.RestController;
-
-    import java.util.List;
-
-    class Response {
-        Boolean success;
-        String feedback;
-
-        public Response(Boolean success, String feedback) {
-            this.success = success;
-            this.feedback = feedback;
-        }
-
-        public Boolean getSuccess() {
-            return success;
-        }
-
-        public void setSuccess(Boolean success) {
-            this.success = success;
-        }
-
-        public String getFeedback() {
-            return feedback;
-        }
-
-        public void setFeedback(String feedback) {
-            this.feedback = feedback;
-        }
-    }
-
-    @RestController
-    public class QuizController {
-        List<String> options = List.of("Robot", "Tea leaf", "Cup of coffee", "Bug");
-        Quiz quiz = new Quiz("The Java Logo", "What is depicted on the Java logo?", options);
-
-        @GetMapping("/api/quiz")
-        public Quiz getQuiz() {
-            return quiz;
-        }
-
-        @PostMapping("/api/quiz")
-        public ResponseEntity<Response> answer(@RequestParam int answer) {
-            if (answer == 2) {
-                return ResponseEntity.ok(new Response(true, "Congratulations, you're right!"));
-            } else {
-                return ResponseEntity.ok(new Response(false, "Wrong answer! Please, try again."));
-            }
-        }
-    }
-  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/8253#comment
 status: Solved
-feedback:
-  message: Congratulations!
-  time: Sun, 12 Jun 2022 06:17:07 UTC
 record: 2
