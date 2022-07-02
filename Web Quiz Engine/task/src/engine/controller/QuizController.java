@@ -5,8 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 class Response {
     Boolean success;
@@ -41,6 +44,13 @@ class QuizNotFoundException extends RuntimeException {
     }
 }
 
+@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+class InvalidQuizException extends RuntimeException {
+    public InvalidQuizException(String cause) {
+        super(cause);
+    }
+}
+
 
 @RestController
 public class QuizController {
@@ -53,10 +63,17 @@ public class QuizController {
     }
 
     @PostMapping("/api/quizzes")
-    public ResponseEntity<Quiz> addQuiz(@RequestBody Quiz quiz) {
-        quiz.setId(++idCount);
-        quizzes.add(quiz);
-        return ResponseEntity.ok(quiz);
+    public ResponseEntity<Quiz> addQuiz(@Valid @RequestBody Quiz quiz) {
+        try {
+            quiz.setId(++idCount);
+            if (quiz.getAnswer() == null) {
+                quiz.setAnswer(new ArrayList<>());
+            }
+            quizzes.add(quiz);
+            return ResponseEntity.ok(quiz);
+        } catch (ConstraintViolationException e) {
+            throw new InvalidQuizException(e.getMessage());
+        }
     }
 
     @GetMapping("/api/quizzes/{id}")
@@ -70,10 +87,11 @@ public class QuizController {
     }
 
     @PostMapping("/api/quizzes/{id}/solve")
-    public ResponseEntity<Response> solveQuiz(@PathVariable int id, @RequestParam int answer) {
+    public ResponseEntity<Response> solveQuiz(@PathVariable int id, @RequestBody Map<String, List<Integer>> map) {
+        List<Integer> answer = map.get("answer");
         for (Quiz quiz : quizzes) {
             if (quiz.getId() == id) {
-                if (quiz.getAnswer() == answer) {
+                if (quiz.getAnswer().equals(answer)) {
                     return ResponseEntity.ok(new Response(true, "Congratulations, you're right!"));
                 } else {
                     return ResponseEntity.ok(new Response(false, "Wrong answer! Please, try again."));
