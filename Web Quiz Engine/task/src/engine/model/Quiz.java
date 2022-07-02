@@ -1,19 +1,41 @@
 package engine.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class Quiz {
+    private int id;
     private String title;
     private String text;
     private List<String> options;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private int answer;
 
     public Quiz() {
     }
 
-    public Quiz(String title, String text, List<String> options) {
+    public Quiz(String title, String text, List<String> options, int answer) {
         this.title = title;
         this.text = text;
         this.options = options;
+        this.answer = answer;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(int answer) {
+        this.answer = answer;
     }
 
     public String getTitle() {
@@ -40,12 +62,14 @@ public class Quiz {
         this.options = options;
     }
 
-    @java.lang.Override
-    public java.lang.String toString() {
+    @Override
+    public String toString() {
         return "Quiz{" +
-                "title='" + title + '\'' +
+                "id=" + id +
+                ", title='" + title + '\'' +
                 ", text='" + text + '\'' +
                 ", options=" + options +
+                ", answer=" + answer +
                 '}';
     }
 }

@@ -1,12 +1,11 @@
 package engine.controller;
 
 import engine.model.Quiz;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class Response {
@@ -35,22 +34,52 @@ class Response {
     }
 }
 
+@ResponseStatus(code = HttpStatus.NOT_FOUND)
+class QuizNotFoundException extends RuntimeException {
+    public QuizNotFoundException(String cause) {
+        super(cause);
+    }
+}
+
+
 @RestController
 public class QuizController {
-    List<String> options = List.of("Robot", "Tea leaf", "Cup of coffee", "Bug");
-    Quiz quiz = new Quiz("The Java Logo", "What is depicted on the Java logo?", options);
+    private final List<Quiz> quizzes = new ArrayList<>();
+    private int idCount = 0;
 
-    @GetMapping("/api/quiz")
-    public Quiz getQuiz() {
-        return quiz;
+    @GetMapping("/api/quizzes")
+    public List<Quiz> getQuizzes() {
+        return quizzes;
     }
 
-    @PostMapping("/api/quiz")
-    public ResponseEntity<Response> answer(@RequestParam int answer) {
-        if (answer == 2) {
-            return ResponseEntity.ok(new Response(true, "Congratulations, you're right!"));
-        } else {
-            return ResponseEntity.ok(new Response(false, "Wrong answer! Please, try again."));
+    @PostMapping("/api/quizzes")
+    public ResponseEntity<Quiz> addQuiz(@RequestBody Quiz quiz) {
+        quiz.setId(++idCount);
+        quizzes.add(quiz);
+        return ResponseEntity.ok(quiz);
+    }
+
+    @GetMapping("/api/quizzes/{id}")
+    public ResponseEntity<Quiz> getQuiz(@PathVariable int id) {
+        for (Quiz quiz : quizzes) {
+            if (quiz.getId() == id) {
+                return ResponseEntity.ok(quiz);
+            }
         }
+        throw new QuizNotFoundException("Oops! The quiz with specified id: " + id + " could not be found.");
+    }
+
+    @PostMapping("/api/quizzes/{id}/solve")
+    public ResponseEntity<Response> solveQuiz(@PathVariable int id, @RequestParam int answer) {
+        for (Quiz quiz : quizzes) {
+            if (quiz.getId() == id) {
+                if (quiz.getAnswer() == answer) {
+                    return ResponseEntity.ok(new Response(true, "Congratulations, you're right!"));
+                } else {
+                    return ResponseEntity.ok(new Response(false, "Wrong answer! Please, try again."));
+                }
+            }
+        }
+        throw new QuizNotFoundException("Oops! The quiz with specified id: " + id + " could not be found.");
     }
 }
