@@ -284,6 +284,9 @@ files:
 - name: src/account/controller/AuthController.java
   visible: true
   learner_created: true
-feedback_link: https://hyperskill.org/projects/217/stages/1086/implement#comment
+feedback_link: https://hyperskill.org/learn/step/16601#comment
 status: Solved
+feedback:
+  message: Congratulations!
+  time: Sat, 02 Jul 2022 17:21:42 UTC
 record: 1

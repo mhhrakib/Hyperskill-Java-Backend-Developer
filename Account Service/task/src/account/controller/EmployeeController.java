@@ -1,7 +1,6 @@
 package account.controller;
 
 import account.dtos.UserDTO;
-import account.exceptions.UserExistException;
 import account.model.User;
 import account.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
