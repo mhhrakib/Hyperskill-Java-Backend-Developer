@@ -47,6 +47,115 @@ files:
     management.endpoint.shutdown.enabled=true
     spring.jackson.serialization.INDENT_OUTPUT=true
   learner_created: false
+- name: src/account/model/User.java
+  visible: true
+  text: |
+    package account.model;
+
+    import com.fasterxml.jackson.annotation.JsonIgnore;
+    import com.fasterxml.jackson.annotation.JsonProperty;
+
+    import javax.validation.constraints.Email;
+    import javax.validation.constraints.NotBlank;
+
+    public class User {
+        @NotBlank
+        private String name;
+
+        @NotBlank
+        private String lastname;
+
+        @NotBlank
+        @Email(regexp = ".+@acme.com", message = "must be a valid email address")
+        private String email;
+
+        @NotBlank
+        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+        private String password;
+
+        public User() {
+        }
+
+        public User(String name, String lastname, String email, String password) {
+            this.name = name;
+            this.lastname = lastname;
+            this.email = email;
+            this.password = password;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getLastname() {
+            return lastname;
+        }
+
+        public void setLastname(String lastname) {
+            this.lastname = lastname;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        @Override
+        public String toString() {
+            return "User{" +
+                    "name='" + name + '\'' +
+                    ", lastname='" + lastname + '\'' +
+                    ", email='" + email + '\'' +
+                    '}';
+        }
+    }
+  learner_created: false
+- name: src/account/controller/AuthController.java
+  visible: true
+  text: |
+    package account.controller;
+
+    import account.model.User;
+    import org.springframework.http.HttpStatus;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.web.bind.annotation.PostMapping;
+    import org.springframework.web.bind.annotation.RequestBody;
+    import org.springframework.web.bind.annotation.RequestMapping;
+    import org.springframework.web.bind.annotation.RestController;
+
+    import javax.validation.ConstraintViolationException;
+    import javax.validation.Valid;
+
+    @RestController
+    @RequestMapping("api/auth/")
+    public class AuthController {
+        @PostMapping("signup")
+        public ResponseEntity signUp(@Valid @RequestBody User user) {
+            try {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(user);
+            } catch (ConstraintViolationException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).
+                        body(e.getMessage());
+            }
+        }
+    }
+  learner_created: false
 - name: test/AccountServiceTest.java
   visible: false
   text: |-
